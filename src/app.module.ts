@@ -1,37 +1,36 @@
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Module } from '@nestjs/common'
-import { AppController } from './app.controller'
-import { AppService } from './app.service'
-import { TypeOrmModule } from '@nestjs/typeorm'
 import { UserModule } from './user/user.module'
-import { User } from './user/entities/user.entity'
-import { ConfigModule, ConfigService } from '@nestjs/config'
 import { InventoryModule } from './inventory/inventory.module'
-import { Inventory } from './inventory/entities/inventory.entity'
-import { UserInventoryModule } from './user_inventory/user_inventory.module'
-import { UserInventory } from './user_inventory/entities/user_inventory.entity'
+import { DatabaseConfig } from './config';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { WorkPositionModule } from './work-position/work-position.module';
+import { FilialsModule } from './filials/filials.module';
+import { DepartamentModule } from './departament/departament.module';
+import { HelpModule } from './help/help.module';
+import { ShortcodeModule } from './shortcode/shortcode.module';
+import { HolidaysModule } from './holidays/holidays.module';
+import { NewsModule } from './news/news.module';
+import { InstructionsModule } from './instructions/instructions.module';
+
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal:true,
+      load: [DatabaseConfig]
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        type: 'mysql',
-        host: configService.get('DB_HOST'),
-        port: configService.get('DB_PORT'),
-        username: configService.get('DB_USER'),
-        password: configService.get('DB_PASS'),
-        database: configService.get('DB_NAME'),
-        entities: [User, Inventory, UserInventory],
-        synchronize: true,
+        ...configService.get('database')
       }),
-      inject: [ConfigService],
+      inject: [ConfigService]
     }),
-    UserModule,
-    InventoryModule,
-    UserInventoryModule,
+    UserModule, 
+    InventoryModule, WorkPositionModule, FilialsModule, DepartamentModule, HelpModule, ShortcodeModule, HolidaysModule, NewsModule, InstructionsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [],
 })
 export class AppModule {}

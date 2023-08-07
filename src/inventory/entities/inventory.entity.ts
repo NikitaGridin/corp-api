@@ -1,5 +1,5 @@
 import { User } from 'src/user/entities/user.entity'
-import { Entity, Column, ManyToOne, ManyToMany } from 'typeorm'
+import { Entity, Column, ManyToOne } from 'typeorm'
 
 @Entity()
 export class Inventory {
@@ -12,9 +12,6 @@ export class Inventory {
   @Column()
   price: number
 
-  // @ManyToMany(() => User, (user) => user.inventories, {
-  //   onDelete: 'NO ACTION',
-  //   onUpdate: 'NO ACTION',
-  // })
-  // users?: User[]
+  @ManyToOne(() => User, (user) => user.inventories)
+  user: User
 }
