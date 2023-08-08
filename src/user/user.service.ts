@@ -10,15 +10,15 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  findAll() {
-    return this.userRepository.find(
-      {
-        relations: ['inventories','workPositions','departament', 'departament.filial', 'news']
-      }
-    );
+  async findAll() {
+    return this.userRepository.find();
   }
 
-  findOne(id: string) {
+  async findById(id: string) {
     return this.userRepository.findOneBy({ id });
+  }
+
+  async findByName(name: string) {
+    return this.userRepository.findOneBy({ name });
   }
 }

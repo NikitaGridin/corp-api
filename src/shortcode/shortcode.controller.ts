@@ -2,8 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { ShortcodeService } from './shortcode.service';
 import { CreateShortcodeDto } from './dto/create-shortcode.dto';
 import { UpdateShortcodeDto } from './dto/update-shortcode.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('shortcode')
+@ApiTags('shortcode')
 export class ShortcodeController {
   constructor(private readonly shortcodeService: ShortcodeService) {}
 

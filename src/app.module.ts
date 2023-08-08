@@ -12,6 +12,7 @@ import { ShortcodeModule } from './shortcode/shortcode.module';
 import { HolidaysModule } from './holidays/holidays.module';
 import { NewsModule } from './news/news.module';
 import { InstructionsModule } from './instructions/instructions.module';
+import { AuthModule } from './auth/auth.module';
 
 
 @Module({
@@ -28,7 +29,7 @@ import { InstructionsModule } from './instructions/instructions.module';
       inject: [ConfigService]
     }),
     UserModule, 
-    InventoryModule, WorkPositionModule, FilialsModule, DepartamentModule, HelpModule, ShortcodeModule, HolidaysModule, NewsModule, InstructionsModule,
+    InventoryModule, WorkPositionModule, FilialsModule, DepartamentModule, HelpModule, ShortcodeModule, HolidaysModule, NewsModule, InstructionsModule, AuthModule,
   ],
   controllers: [],
   providers: [],

@@ -1,28 +1,18 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Param, UseGuards} from '@nestjs/common';
 import { UserService } from './user.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { jwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { UserId } from 'src/auth/decorators/user-id.decorator';
 
 @Controller('user')
 @ApiTags('user')
+@ApiBearerAuth()
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get()
-  findAll() {
-    return this.userService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(id);
-  }
-
+  @Get('me')
+  @UseGuards(jwtAuthGuard)
+  getMe(@UserId() id: string){
+    return this.userService.findById(id)
+  }  
 }
