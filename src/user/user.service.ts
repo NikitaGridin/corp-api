@@ -10,15 +10,28 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async findAll() {
-    return this.userRepository.find();
+  async findAll(): Promise<User[]> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.role', 'role')
+      .getMany();
   }
 
-  async findById(id: string) {
-    return this.userRepository.findOneBy({ id });
-  }
+  async findById(id: string): Promise<User | undefined> {
+    const user = await this.userRepository
+    .createQueryBuilder('user')
+    .leftJoinAndSelect('user.role', 'role') // Load the related role
+    .where('user.id = :id', { id })
+    .getOne();
 
-  async findByName(name: string) {
-    return this.userRepository.findOneBy({ name });
+    return user;
+  }  
+
+  async findByName(name: string): Promise<User | undefined> {
+    return this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.role', 'role') // Load the related role
+      .where('user.name = :name', { name })
+      .getOne();
   }
 }

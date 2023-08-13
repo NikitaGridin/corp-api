@@ -1,8 +1,9 @@
-import { Controller, Get, Param, UseGuards} from '@nestjs/common';
+import { Controller, Get,Post,Request, SetMetadata, UseGuards} from '@nestjs/common';
 import { UserService } from './user.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { jwtAuthGuard } from 'src/auth/guards/jwt.guard';
-import { UserId } from 'src/auth/decorators/user-id.decorator';
+import { LocalAuthGuard } from 'src/auth/local.auth.guard';
+import { AuthenticatedGuard } from 'src/auth/auth.guard';
+import { RolesGuard } from 'src/auth/roles.guard';
 
 @Controller('user')
 @ApiTags('user')
@@ -10,9 +11,30 @@ import { UserId } from 'src/auth/decorators/user-id.decorator';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Get('me')
-  @UseGuards(jwtAuthGuard)
-  getMe(@UserId() id: string){
-    return this.userService.findById(id)
+  @Get('all')
+  @UseGuards(RolesGuard)
+  @SetMetadata('roles', 'admin')
+    getAll(){
+    return this.userService.findAll()
+  }  
+
+  @Post('login')
+  @UseGuards(LocalAuthGuard)
+  login(@Request() req){
+    return {user: req.user, msg: 'Logged in'}
+  }  
+
+  @Get('login-check')
+  @UseGuards(AuthenticatedGuard)
+  loginCheck(@Request() req){
+    return req.user
+  }  
+
+  @Get('logout')
+  // @UseGuards(AuthenticatedGuard)
+  logout(@Request() req){
+    req.session.destroy()
+    return {msg: 'Session ended'}
+
   }  
 }

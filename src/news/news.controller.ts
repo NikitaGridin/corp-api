@@ -1,25 +1,31 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards,Request } from '@nestjs/common';
 import { NewsService } from './news.service';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { jwtAuthGuard } from 'src/auth/guards/jwt.guard';
+import { AuthenticatedGuard } from 'src/auth/auth.guard';
 
 @Controller('news')
 @ApiTags('news')
-@UseGuards(jwtAuthGuard)
 @ApiBearerAuth()
 export class NewsController {
   constructor(private readonly newsService: NewsService) {}
 
-  @Post()
-  create(@Body() createNewsDto: CreateNewsDto) {
-    return this.newsService.create(createNewsDto);
+  @Post('setLike')
+  @UseGuards(AuthenticatedGuard)
+  create(@Request() req, @Body() newsId: any) {
+    return this.newsService.create(req.user.userId,newsId.newsId);
+  }
+  @Post('removeLike')
+  @UseGuards(AuthenticatedGuard)
+  removeLike(@Request() req, @Body() newsId: any) {
+    return this.newsService.removeLike(req.user.userId,newsId.newsId);
   }
 
   @Get()
-  findAll() {
-    return this.newsService.findAll();
+  @UseGuards(AuthenticatedGuard)
+  findAll(@Request() req) {
+    return this.newsService.findAll(req.user.userId);
   }
 
   @Get(':id')

@@ -1,19 +1,52 @@
 import { Injectable } from '@nestjs/common';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
+import { News } from './entities/news.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class NewsService {
-  create(createNewsDto: CreateNewsDto) {
-    return 'This action adds a new news';
-  }
+  constructor(
+    @InjectRepository(News)
+    private readonly newsRepository: Repository<News>,
+  ) {}
+  
+  async create(userId: string, newsId: number) {
+    await this.newsRepository
+    .createQueryBuilder()
+    .insert()
+    .into('likes')
+    .values({ userId, newsId })
+    .execute();
+}   
+async removeLike(userId: string, newsId: number): Promise<void> {
+  await this.newsRepository
+    .createQueryBuilder()
+    .delete()
+    .from('likes')
+    .where('userId = :userId', { userId })
+    .andWhere('newsId = :newsId', { newsId })
+    .execute();
+}
+  
 
-  findAll() {
-    return `This action returns all news`;
-  }
+  async findAll(userId): Promise<any> {
+  return this.newsRepository
+    .createQueryBuilder('news')
+    .leftJoin('news.views', 'views')
+    .leftJoin('news.likes', 'likes')
+    .addSelect('COUNT(DISTINCT views.id)', 'viewsCount')
+    .addSelect('COUNT(DISTINCT likes.id)', 'likesCount')
+    .addSelect('COUNT(CASE WHEN likes.id = :userId THEN 1 ELSE NULL END)', 'currentUserLiked') // Если есть, то true, иначе false
+    .addSelect('COUNT(CASE WHEN views.id = :userId THEN 1 ELSE NULL END)', 'currentUserViews') // Если есть, то true, иначе false
+    .setParameter('userId', userId)
+    .groupBy('news.id')
+    .getRawMany();
+}
 
   findOne(id: number) {
-    return `This action returns a #${id} news`;
+    return `This action returns a #${id} news`; 
   }
 
   update(id: number, updateNewsDto: UpdateNewsDto) {

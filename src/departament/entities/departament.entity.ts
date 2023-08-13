@@ -19,4 +19,4 @@ export class Departament {
 
   @OneToMany(() => Instruction, (instruction) => instruction.departament)
   instructions: Instruction[]
-}
+} 

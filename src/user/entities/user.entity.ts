@@ -1,8 +1,9 @@
 import { Departament } from 'src/departament/entities/departament.entity'
 import { Inventory } from 'src/inventory/entities/inventory.entity'
 import { News } from 'src/news/entities/news.entity'
+import { Role } from 'src/roles/entities/role.entity'
 import { WorkPosition } from 'src/work-position/entities/work-position.entity'
-import { Entity, Column,  JoinTable, OneToMany, ManyToMany, ManyToOne } from 'typeorm'
+import { Entity, Column,  JoinTable, OneToMany, ManyToMany, ManyToOne, OneToOne } from 'typeorm'
 
 @Entity()
 export class User {
@@ -32,19 +33,22 @@ export class User {
   
   @OneToMany(() => Inventory, (inventory) => inventory.user)
   inventories: Inventory[]
-
+  
   @ManyToMany(() => WorkPosition, (wokrPosition) => wokrPosition.users)
   @JoinTable({ name: 'position_user' })
   workPositions: WorkPosition[]
-
+  
   @ManyToOne(() => Departament, (departament) => departament.user)
   departament: Departament
-
+  
   @ManyToMany(() => News, (news) => news.views)
   @JoinTable({ name: 'views' })
   views: News[]
-
+  
   @ManyToMany(() => News, (news) => news.likes)
   @JoinTable({ name: 'likes' })
   likes: News[]
+  
+  @ManyToOne(() => Role, (role) => role.users)
+  role: Role  
 }
